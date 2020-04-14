@@ -1,0 +1,63 @@
+{
+    "people": {
+        "b7b527c6-ef5a-4e1a-a413-14ecb6785264": {
+            "id": "b7b527c6-ef5a-4e1a-a413-14ecb6785264"
+        },
+        "f213f801-7fce-45b7-bf0d-6ec5a42d64d7": {
+            "id": "f213f801-7fce-45b7-bf0d-6ec5a42d64d7",
+            "firstName": "Mario",
+            "lastName": "Mario",
+            "email": "mario@supermario.com",
+            "department": "Plumber",
+            "mobileNumber": "5555555555",
+            "age": 23
+        },
+        "b2188adf-f8e4-4332-a9ab-823babf5ed7b": {
+            "id": "b2188adf-f8e4-4332-a9ab-823babf5ed7b",
+            "firstName": "Luigi",
+            "lastName": "Mario",
+            "email": "luigi@supermario.com",
+            "department": "Plumber",
+            "mobileNumber": "5555554444",
+            "age": 20
+        },
+        "2faf3af0-ba71-47b5-a376-cef9db43b82f": {
+            "id": "2faf3af0-ba71-47b5-a376-cef9db43b82f",
+            "firstName": "David",
+            "lastName": "Tucker",
+            "email": "david@globomantics.com",
+            "department": "Senior Software Engineer",
+            "mobileNumber": "5555556666",
+            "age": 29
+        }
+    },
+    "users": {
+        "david": {
+            "password": "mypassword",
+            "permissions": {
+                "people": [
+                    "reader",
+                    "writer"
+                ]
+            }
+        },
+        "jessi": {
+            "password": "mypassword",
+            "permissions": {
+                "people": [
+                    "reader"
+                ]
+            }
+        },
+        "dallin": {
+            "password": "mypassword",
+            "permissions": {
+                "people": [
+                    "reader",
+                    "writer",
+                    "deleter"
+                ]
+            }
+        }
+    }
+}
