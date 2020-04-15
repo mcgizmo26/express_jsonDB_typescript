@@ -1,18 +1,23 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const validator_1 = __importDefault(require("validator"));
-require("reflect-metadata");
-function validate(object) {
-    const keys = Reflect.getMetadata("validation:properties", object);
+import validator from 'validator';
+import "reflect-metadata";
+
+type ValidationFunction = (target: any, property: string, validationrOption?: any) => string | void;
+
+interface ValidationRule {
+    validationOptions?: any;
+    validator: ValidationFunction;
+}
+
+export function validate(object: any) {
+    const keys = Reflect.getMetadata("validation:properties", object) as string[];
     let errorMap = {};
+
     if (!keys || !Array.isArray(keys)) {
         return errorMap;
     }
+
     for (const key of keys) {
-        const rules = Reflect.getMetadata("validation:rules", object, key);
+        const rules: ValidationRule[] = Reflect.getMetadata("validation:rules", object, key) as ValidationRule[];
         if (!Array.isArray(rules)) {
             continue;
         }
@@ -24,50 +29,52 @@ function validate(object) {
             }
         }
     }
+
     return errorMap;
 }
-exports.validate = validate;
-function isEmail(target, propertyKey) {
+
+export function isEmail(target: any, propertyKey: string) {
     addValidation(target, propertyKey, emailValidator);
 }
-exports.isEmail = isEmail;
-function required(target, propertyKey) {
+
+export function required(target: any, propertyKey: string) {
     addValidation(target, propertyKey, requiredValidator);
 }
-exports.required = required;
-function length(minimum, maximum) {
+
+export function length(minimum: Number, maximum: Number) {
     const options = {
         minimum: minimum,
         maximum: maximum
     };
-    return function (target, propertyKey) {
+    return function (target: any, propertyKey: string) {
         addValidation(target, propertyKey, lengthValidator, options);
-    };
+    }
 }
-exports.length = length;
-function isPhone(target, propertyKey) {
+
+export function isPhone(target: any, propertyKey: string) {
     addValidation(target, propertyKey, phoneValidator);
 }
-exports.isPhone = isPhone;
-function isInteger(minimum, maximum) {
+
+export function isInteger(minimum: Number, maximum: number) {
     const options = {
         minimum: minimum,
         maximum: maximum
     };
-    return function (target, propertyKey) {
+    return function (target: any, propertyKey: string) {
         addValidation(target, propertyKey, integerValidator, options);
-    };
+    }
 }
-exports.isInteger = isInteger;
-function addValidation(target, propertyKey, validator, validationOptions) {
+
+function addValidation(target: any, propertyKey: string, validator: ValidationFunction, validationOptions?: any) {
     // Make sure we have the list of all properties for the object
-    let objectProperties = Reflect.getMetadata("validation:properties", target) || [];
+    let objectProperties: string[] = Reflect.getMetadata("validation:properties", target) || [];
     if (!objectProperties.includes(propertyKey)) {
         objectProperties.push(propertyKey);
         Reflect.defineMetadata("validation:properties", objectProperties, target);
     }
+
     // Make sure we capture validation rule
-    let validators = Reflect.getMetadata("validation:rules", target, propertyKey) || [];
+    let validators: ValidationRule[] = Reflect.getMetadata("validation:rules", target, propertyKey) || [];
     let validationRule = {
         validator: validator,
         validationOptions: validationOptions
@@ -75,26 +82,30 @@ function addValidation(target, propertyKey, validator, validationOptions) {
     validators.push(validationRule);
     Reflect.defineMetadata("validation:rules", validators, target, propertyKey);
 }
+
 // VALIDATOR FUNCTIONS
-function emailValidator(target, propertyKey) {
+
+function emailValidator(target: any, propertyKey: string): string | void {
     let value = target[propertyKey];
     if (value == null) {
         return;
     }
-    const isValid = validator_1.default.isEmail(value);
+    const isValid = validator.isEmail(value);
     if (!isValid) {
-        return `Property ${propertyKey} must be a valid email.`;
+        return `Property ${propertyKey} must be a valid email.`
     }
     return;
 }
-function requiredValidator(target, propertyKey) {
+
+function requiredValidator(target: any, propertyKey: string): string | void {
     let value = target[propertyKey];
     if (value) {
         return;
     }
-    return `Property ${propertyKey} is required.`;
+    return `Property ${propertyKey} is required.`
 }
-function integerValidator(target, propertyKey, validatorOptions) {
+
+function integerValidator(target: any, propertyKey: string, validatorOptions: any): string | void {
     const value = target[propertyKey];
     if (value == null) {
         return;
@@ -108,26 +119,27 @@ function integerValidator(target, propertyKey, validatorOptions) {
     }
     return errorMessage;
 }
-function lengthValidator(target, propertyKey, validatorOptions) {
+
+function lengthValidator(target: any, propertyKey: string, validatorOptions: any): string | void {
     const options = {
         min: validatorOptions.minimum,
         max: validatorOptions.maximum
     };
-    const isValid = validator_1.default.isLength(target[propertyKey] + '', options);
+    const isValid = validator.isLength(target[propertyKey] + '', options);
     if (!isValid) {
         return `Property ${propertyKey} must be a string between ${validatorOptions.minimum} and ${validatorOptions.maximum} in length`;
     }
     return;
 }
-function phoneValidator(target, propertyKey, validationOptions) {
+
+function phoneValidator(target: any, propertyKey, validationOptions: any): string | void {
     let value = target[propertyKey];
     if (value == null) {
         return;
     }
-    const isValid = validator_1.default.isMobilePhone(value);
+    const isValid = validator.isMobilePhone(value);
     if (!isValid) {
-        return `Property ${propertyKey} must be a valid phone number.`;
+        return `Property ${propertyKey} must be a valid phone number.`
     }
     return;
 }
-//# sourceMappingURL=validation.js.map

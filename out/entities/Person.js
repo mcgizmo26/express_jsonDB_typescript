@@ -22,14 +22,20 @@ __decorate([
 ], Person.prototype, "id", void 0);
 __decorate([
     decorators_1.persist,
+    decorators_1.required,
+    decorators_1.length(3, 400),
     __metadata("design:type", String)
 ], Person.prototype, "firstName", void 0);
 __decorate([
     decorators_1.persist,
+    decorators_1.required,
+    decorators_1.length(3, 400),
     __metadata("design:type", String)
 ], Person.prototype, "lastName", void 0);
 __decorate([
     decorators_1.persist,
+    decorators_1.required,
+    decorators_1.isEmail,
     __metadata("design:type", String)
 ], Person.prototype, "email", void 0);
 __decorate([
@@ -38,10 +44,14 @@ __decorate([
 ], Person.prototype, "department", void 0);
 __decorate([
     decorators_1.persist,
+    decorators_1.isPhone,
+    decorators_1.required,
     __metadata("design:type", String)
 ], Person.prototype, "mobileNumber", void 0);
 __decorate([
     decorators_1.persist,
+    decorators_1.required,
+    decorators_1.isInteger(1, 130),
     __metadata("design:type", Number)
 ], Person.prototype, "age", void 0);
 Person = __decorate([

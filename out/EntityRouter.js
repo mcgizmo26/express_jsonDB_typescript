@@ -1,4 +1,13 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -14,6 +23,7 @@ const app_1 = require("./app");
 const uuid = __importStar(require("uuid"));
 const express_1 = __importDefault(require("express"));
 const BaseEntity_1 = require("./entities/BaseEntity");
+const decorators_1 = require("./decorators");
 class EntityRouter {
     constructor(name, classRef) {
         this.name = name;
@@ -58,12 +68,12 @@ class EntityRouter {
     }
     createEntity(req, res) {
         let newEntity = BaseEntity_1.EntityFactory.fromPersistenceObject(req.body, this.classRef);
-        // let errorMap = validate(newEntity);
-        // if (Object.keys(errorMap).length > 0) {
-        //     const output = { errors: errorMap };
-        //     res.status(400).json(output);
-        //     return;
-        // }
+        let errorMap = decorators_1.validate(newEntity);
+        if (Object.keys(errorMap).length > 0) {
+            const output = { errors: errorMap };
+            res.status(400).json(output);
+            return;
+        }
         const idProperty = Reflect.getMetadata("entity:id", newEntity);
         newEntity[idProperty] = uuid.v4();
         app_1.db.push(`/${this.name}/${newEntity[idProperty]}`, newEntity.getPersistenceObject());
@@ -87,12 +97,12 @@ class EntityRouter {
             updatedObj[propKey] = updatedData[propKey];
         }
         // Validate
-        // let errorMap = validate(updatedObj);
-        // if (Object.keys(errorMap).length > 0) {
-        //     const output = { errors: errorMap };
-        //     res.status(400).json(output);
-        //     return;
-        // }
+        let errorMap = decorators_1.validate(updatedObj);
+        if (Object.keys(errorMap).length > 0) {
+            const output = { errors: errorMap };
+            res.status(400).json(output);
+            return;
+        }
         // Save and Return data
         app_1.db.push(`/${this.name}/${req.params.id}`, updatedData, false);
         data = app_1.db.getData(`/${this.name}/${req.params.id}`);
@@ -103,5 +113,40 @@ class EntityRouter {
         res.json({});
     }
 }
+__decorate([
+    decorators_1.auth("reader"),
+    decorators_1.logRoute,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], EntityRouter.prototype, "fetchAllEntities", null);
+__decorate([
+    decorators_1.auth("reader"),
+    decorators_1.logRoute,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], EntityRouter.prototype, "fetchEntity", null);
+__decorate([
+    decorators_1.auth("writer"),
+    decorators_1.logRoute,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], EntityRouter.prototype, "createEntity", null);
+__decorate([
+    decorators_1.auth("writer"),
+    decorators_1.logRoute,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], EntityRouter.prototype, "updateEntity", null);
+__decorate([
+    decorators_1.auth("deleter"),
+    decorators_1.logRoute,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], EntityRouter.prototype, "deleteEntity", null);
 exports.default = EntityRouter;
 //# sourceMappingURL=EntityRouter.js.map
